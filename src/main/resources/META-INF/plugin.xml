@@ -1,10 +1,19 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.pberdnik.dependenciesanalyzerplugin</id>
-    <name>dependencies-analyzer-plugin</name>
+    <name>Dependencies Analyzer</name>
     <vendor>pberdnik</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+
+    <actions>
+        <action id="org.intellij.sdk.action.PopupDialogAction" class="com.github.pberdnik.dependenciesanalyzerplugin.actions.PopupDialogAction"
+                text="Action Basics Plugin: Pop Dialog Action" description="SDK action example"
+                icon="SdkIcons.coloredGraph">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <override-text place="MainMenu" text="Pop Dialog Action"/>
+        </action>
+    </actions>
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.github.pberdnik.dependenciesanalyzerplugin.services.MyApplicationService"/>
