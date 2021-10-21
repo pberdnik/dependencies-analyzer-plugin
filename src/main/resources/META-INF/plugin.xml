@@ -25,6 +25,8 @@
         <projectService serviceImplementation="com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService"/>
         <applicationService serviceImplementation="com.github.pberdnik.dependenciesanalyzerplugin.services.MyApplicationService"/>
         <projectService serviceImplementation="com.github.pberdnik.dependenciesanalyzerplugin.services.MyProjectService"/>
+
+        <projectViewPane implementation="com.github.pberdnik.dependenciesanalyzerplugin.views.DependenciesProjectViewPane"/>
     </extensions>
 
     <applicationListeners>
