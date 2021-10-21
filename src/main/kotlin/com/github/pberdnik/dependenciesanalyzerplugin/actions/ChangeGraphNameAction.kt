@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import java.lang.StringBuilder
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.ui.Messages
+import java.util.*
 import javax.swing.Icon
 
 /**
@@ -15,10 +16,10 @@ import javax.swing.Icon
  * Typically this class is instantiated by the IntelliJ Platform framework based on declarations
  * in the plugin.xml file. But when added at runtime this class is instantiated by an action group.
  */
-class PopupDialogAction : AnAction {
+class ChangeGraphNameAction : AnAction {
     /**
      * This default constructor is used by the IntelliJ Platform framework to instantiate this class based on plugin.xml
-     * declarations. Only needed in [PopupDialogAction] class because a second constructor is overridden.
+     * declarations. Only needed in [ChangeGraphNameAction] class because a second constructor is overridden.
      *
      * @see AnAction
      */
@@ -46,8 +47,11 @@ class PopupDialogAction : AnAction {
         // Using the event, create and show a dialog
         val currentProject = event.project ?: return
         val graphStorageService = GraphStorageService.getInstance(currentProject)
-        val dlgMsg = "Graph name: ${graphStorageService.state.name}"
-        val dlgTitle = "Graph Name"
+        val graph = graphStorageService.state
+        val random = Random()
+        graph.name = "Some int: ${random.nextInt() % 12}"
+        val dlgMsg = "New graph name: ${graph.name}"
+        val dlgTitle = "Graph Name Changed"
         Messages.showMessageDialog(currentProject, dlgMsg, dlgTitle, Messages.getInformationIcon())
     }
 
