@@ -19,6 +19,12 @@
             <add-to-group group-id="ToolsMenu" anchor="first"/>
             <override-text place="MainMenu" text="Change Graph Name"/>
         </action>
+        <action id="com.intellij.packageDependencies.actions.MyAnalyzeDependenciesAction" class="com.intellij.packageDependencies.actions.MyAnalyzeDependenciesAction"
+                text="Action Basics Plugin: Change Graph Name" description="SDK action example"
+                icon="SdkIcons.coloredGraph">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <override-text place="MainMenu" text="Analyze Dependencies"/>
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
