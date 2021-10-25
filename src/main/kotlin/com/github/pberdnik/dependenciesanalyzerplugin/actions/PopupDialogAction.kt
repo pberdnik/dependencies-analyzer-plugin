@@ -46,8 +46,8 @@ class PopupDialogAction : AnAction {
         // Using the event, create and show a dialog
         val currentProject = event.project ?: return
         val graphStorageService = GraphStorageService.getInstance(currentProject)
-        val dlgMsg = "Graph name: ${graphStorageService.state.name}"
-        val dlgTitle = "Graph Name"
+        val dlgMsg = "Code files count: ${graphStorageService.state.codeFiles.size}"
+        val dlgTitle = "Code Files Count"
         Messages.showMessageDialog(currentProject, dlgMsg, dlgTitle, Messages.getInformationIcon())
     }
 

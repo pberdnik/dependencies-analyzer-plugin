@@ -15,6 +15,8 @@ plugins {
     // Gradle Qodana Plugin
     id("org.jetbrains.qodana") version "0.1.12"
     id ("org.gradle.kotlin.kotlin-dsl") version "2.1.7"
+
+    kotlin("plugin.serialization") version "1.5.30"
 }
 
 group = properties("pluginGroup")

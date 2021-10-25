@@ -11,13 +11,13 @@
                 text="Action Basics Plugin: Show Graph Name" description="SDK action example"
                 icon="SdkIcons.coloredGraph">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <override-text place="MainMenu" text="Show Graph"/>
+            <override-text place="MainMenu" text="Show Code Files Size"/>
         </action>
         <action id="com.github.pberdnik.dependenciesanalyzerplugin.actions.ChangeGraphNameAction" class="com.github.pberdnik.dependenciesanalyzerplugin.actions.ChangeGraphNameAction"
                 text="Action Basics Plugin: Change Graph Name" description="SDK action example"
                 icon="SdkIcons.coloredGraph">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <override-text place="MainMenu" text="Change Graph Name"/>
+            <override-text place="MainMenu" text="Add Random Path To CodeFiles"/>
         </action>
         <action id="com.intellij.packageDependencies.actions.MyAnalyzeDependenciesAction" class="com.intellij.packageDependencies.actions.MyAnalyzeDependenciesAction"
                 text="Action Basics Plugin: Change Graph Name" description="SDK action example"

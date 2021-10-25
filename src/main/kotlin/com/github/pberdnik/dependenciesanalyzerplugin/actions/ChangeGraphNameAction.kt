@@ -1,11 +1,10 @@
 // Copyright 2000-2020 JetBrains s.r.o. and other contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.pberdnik.dependenciesanalyzerplugin.actions
 
+import com.github.pberdnik.dependenciesanalyzerplugin.old.file.CodeFile
 import com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import java.lang.StringBuilder
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.ui.Messages
 import java.util.*
 import javax.swing.Icon
@@ -49,8 +48,18 @@ class ChangeGraphNameAction : AnAction {
         val graphStorageService = GraphStorageService.getInstance(currentProject)
         val graph = graphStorageService.state
         val random = Random()
-        graph.name = "Some int: ${random.nextInt() % 12}"
-        val dlgMsg = "New graph name: ${graph.name}"
+        val randomPath = "/random/path${random.nextInt() % 12}"
+//        val codeFiles = mutableSetOf<CodeFile>()
+//        codeFiles.add(CodeFile(randomPath, 0, listOf()))
+//        graph.codeFiles = codeFiles.toList()
+        graph.codeFiles.add(
+            CodeFile(
+                randomPath,
+                0,
+                listOf()
+            )
+        )
+        val dlgMsg = "Added path: $randomPath"
         val dlgTitle = "Graph Name Changed"
         Messages.showMessageDialog(currentProject, dlgMsg, dlgTitle, Messages.getInformationIcon())
     }

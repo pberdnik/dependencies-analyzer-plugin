@@ -7,7 +7,7 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
 
-@State(name = "DependenciesGraph", storages = [Storage("dependenciesGraph.xml")])
+@State(name = "DependenciesGraph", storages = [Storage("dependenciesInfo.xml")])
 class GraphStorageService(val project: Project) : PersistentStateComponent<GraphState> {
     private val state = GraphState()
 
@@ -21,10 +21,7 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
 
     companion object {
         fun getInstance(project: Project): GraphStorageService {
-            return ServiceManager.getService(
-                project,
-                GraphStorageService::class.java
-            )
+            return ServiceManager.getService(project, GraphStorageService::class.java)
         }
     }
 }
