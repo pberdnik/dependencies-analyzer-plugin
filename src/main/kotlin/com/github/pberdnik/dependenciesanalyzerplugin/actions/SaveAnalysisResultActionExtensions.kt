@@ -29,4 +29,6 @@ fun performAction(dependencies: MutableMap<PsiFile, MutableSet<PsiFile>>, projec
     val storage = getInstance(project)
     val state = storage.state
     state.codeFiles = codeFiles
+
+    storage.analyze()
 }
