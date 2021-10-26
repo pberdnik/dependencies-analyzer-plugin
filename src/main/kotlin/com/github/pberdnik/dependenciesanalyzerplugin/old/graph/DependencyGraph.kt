@@ -1,11 +1,6 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.old.graph
 
-import com.github.pberdnik.dependenciesanalyzerplugin.old.PACKAGE
-import com.github.pberdnik.dependenciesanalyzerplugin.old.common.ARE_OTHER_PACKAGES_RED
 import com.github.pberdnik.dependenciesanalyzerplugin.old.file.CodeFile
-import com.github.pberdnik.dependenciesanalyzerplugin.old.file.className
-import com.github.pberdnik.dependenciesanalyzerplugin.old.file.libBroPackage
-import com.github.pberdnik.dependenciesanalyzerplugin.old.file.module
 
 class DependencyGraph {
     val nodes = mutableSetOf<Node>()
@@ -101,7 +96,7 @@ class DependencyGraph {
         topSorted.forEach { node ->
             node._color = Color.WHITE
 
-            if (!config.greenModules.contains(node.codeFile.module) || node.cycle != null || config.redClasses.contains(node.codeFile.className) || ARE_OTHER_PACKAGES_RED && node.codeFile.module == "lib-bro" && node.codeFile.libBroPackage != PACKAGE) {
+            if (!config.greenModules.contains(node.codeFile.module) || node.cycle != null || config.redClasses.contains(node.codeFile.className)) {
                 markAsRed(node)
             } else if (node.dependencies.isEmpty()) {
                 node._color = Color.GREEN

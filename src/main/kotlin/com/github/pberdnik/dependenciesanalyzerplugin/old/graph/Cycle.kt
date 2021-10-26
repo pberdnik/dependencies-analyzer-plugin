@@ -1,8 +1,5 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.old.graph
 
-import com.github.pberdnik.dependenciesanalyzerplugin.old.file.className
-
-
 class Cycle {
     val nodes = mutableListOf<Node>()
 

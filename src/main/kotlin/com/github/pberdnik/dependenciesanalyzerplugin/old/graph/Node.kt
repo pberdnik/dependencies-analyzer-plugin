@@ -1,9 +1,6 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.old.graph
 
 import com.github.pberdnik.dependenciesanalyzerplugin.old.file.CodeFile
-import com.github.pberdnik.dependenciesanalyzerplugin.old.file.className
-import com.github.pberdnik.dependenciesanalyzerplugin.old.file.libBroPackage
-import com.github.pberdnik.dependenciesanalyzerplugin.old.file.module
 import com.github.pberdnik.dependenciesanalyzerplugin.old.platform.File
 import com.github.pberdnik.dependenciesanalyzerplugin.old.util.TextLines
 import kotlinx.coroutines.CoroutineScope
@@ -48,15 +45,4 @@ class Node(val codeFile: CodeFile) : File {
     override fun hashCode(): Int {
         return id.hashCode()
     }
-
-    override fun toString(): String {
-        return this.asClass()
-    }
 }
-
-private fun Node.asClass() = if (_color == Color.GREEN) this.asGreenClass() else if (_color == Color.RED) this.asRedClass() + (if (this.cycle != null) "\n CYCLE \n$cycle" else "") else "COLOR UNKNOWN .(${codeFile.className}:1)"
-private fun Node.asDependency() = if (_color == Color.GREEN) this.asGreenDependency() else if (_color == Color.RED) this.asRedDependency() else "COLOR UNKNOWN .(${codeFile.className}:1)"
-private fun Node.asGreenDependency() = "    GREEN <$depth> ${if (codeFile.module != "lib-bro") codeFile.module else "lib-bro." + codeFile.libBroPackage}.(${codeFile.className}:1)"
-private fun Node.asGreenClass() = "${if (codeFile.module != "lib-bro") codeFile.module else "lib-bro." + codeFile.libBroPackage}.(${codeFile.className}:1) GREEN <$depth>"
-private fun Node.asRedDependency() = "    RED <$depth>[${backwardDependencies.size}] ${if (codeFile.module != "lib-bro") codeFile.module else "lib-bro." + codeFile.libBroPackage}.(${codeFile.className}:1)"
-private fun Node.asRedClass() = "${if (codeFile.module != "lib-bro") codeFile.module else "lib-bro." + codeFile.libBroPackage}.(${codeFile.className}:1) RED <$depth>[${backwardDependencies.size}]"

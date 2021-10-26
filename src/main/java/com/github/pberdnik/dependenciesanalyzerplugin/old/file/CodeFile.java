@@ -14,6 +14,14 @@ public class CodeFile implements Serializable {
     @Property(alwaysWrite = true)
     public String path = "";
 
+    @Attribute("module")
+    @Property(alwaysWrite = true)
+    public String module = "";
+
+    @Attribute("className")
+    @Property(alwaysWrite = true)
+    public String className = "";
+
     @Attribute("size")
     public int size = 0;
 
@@ -28,9 +36,10 @@ public class CodeFile implements Serializable {
         this.path = path;
     }
 
-    public CodeFile(String path, int size, List<String> dependencies) {
+    public CodeFile(String path, int size, List<String> dependencies, String module) {
         this.path = path;
         this.size = size;
         this.dependencies = dependencies;
+        this.module = module;
     }
 }

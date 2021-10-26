@@ -2,6 +2,7 @@ package com.github.pberdnik.dependenciesanalyzerplugin.actions
 
 import com.github.pberdnik.dependenciesanalyzerplugin.old.file.CodeFile
 import com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService.Companion.getInstance
+import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import java.util.*
@@ -17,13 +18,8 @@ fun performAction(dependencies: MutableMap<PsiFile, MutableSet<PsiFile>>, projec
         for (dep in fileDeps) {
             deps.add(dep.virtualFile.path)
         }
-        codeFiles.add(
-            CodeFile(
-                filePath,
-                0,
-                deps
-            )
-        )
+        val module = ModuleUtil.findModuleForFile(file)?.name ?: ""
+        codeFiles.add(CodeFile(filePath, 0, deps, module))
     }
 
     val storage = getInstance(project)

@@ -1,8 +1,6 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.old.graph
 
 import com.github.pberdnik.dependenciesanalyzerplugin.old.file.CodeFile
-import com.github.pberdnik.dependenciesanalyzerplugin.old.file.className
-import com.github.pberdnik.dependenciesanalyzerplugin.old.file.module
 
 fun asDependencyGraph(codeFiles: MutableCollection<CodeFile>, config: GraphConfig): DependencyGraph {
     val graph = DependencyGraph()
