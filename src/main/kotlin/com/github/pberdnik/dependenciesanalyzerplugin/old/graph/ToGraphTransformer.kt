@@ -17,7 +17,7 @@ fun asDependencyGraph(codeFiles: MutableCollection<CodeFile>, config: GraphConfi
     return graph
 }
 
-fun CodeFile.isBad(config: GraphConfig): Boolean {
+private fun CodeFile.isBad(config: GraphConfig): Boolean {
     val path = path
     if (path.contains("\$USER_HOME\$")) return true
     config.filteredClasses.forEach { if (path.endsWith(it)) return true }

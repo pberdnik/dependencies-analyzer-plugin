@@ -7,6 +7,7 @@ import com.intellij.util.xmlb.annotations.XCollection;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @Tag("file")
 public class CodeFile implements Serializable {
@@ -23,7 +24,7 @@ public class CodeFile implements Serializable {
     public String className = "";
 
     @Attribute("size")
-    public int size = 0;
+    public long size = 0;
 
     @Tag("dependencies")
     @XCollection(elementName = "file", valueAttributeName = "path")
@@ -36,10 +37,24 @@ public class CodeFile implements Serializable {
         this.path = path;
     }
 
-    public CodeFile(String path, int size, List<String> dependencies, String module) {
+    public CodeFile(String path, String module, String className, long size, List<String> dependencies) {
         this.path = path;
+        this.module = module;
+        this.className = className;
         this.size = size;
         this.dependencies = dependencies;
-        this.module = module;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CodeFile codeFile = (CodeFile) o;
+        return path.equals(codeFile.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path);
     }
 }

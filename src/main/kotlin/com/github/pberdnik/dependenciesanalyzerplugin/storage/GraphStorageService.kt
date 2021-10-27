@@ -16,6 +16,7 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
     private val state = GraphState()
     var dependencyGraph = DependencyGraph()
         private set
+    val graphConfig = GraphConfig(Config())
 
     override fun getState(): GraphState {
         return state

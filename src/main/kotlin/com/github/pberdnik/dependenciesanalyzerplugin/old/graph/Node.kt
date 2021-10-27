@@ -23,13 +23,13 @@ class Node(val codeFile: CodeFile) : File {
     override val children: List<File> = emptyList()
     override val hasChildren = false
     override var redSize: Int
-        get() = if (_color == Color.RED) codeFile.size else 0
+        get() = if (_color == Color.RED) codeFile.size.toInt() else 0
         set(_) {}
     override var greenSize: Int
-        get() = if (_color == Color.GREEN) codeFile.size else 0
+        get() = if (_color == Color.GREEN) codeFile.size.toInt() else 0
         set(_) {}
     override var yellowSize: Int
-        get() = if (_color == Color.RED && onlyRed != null) codeFile.size else 0
+        get() = if (_color == Color.RED && onlyRed != null) codeFile.size.toInt() else 0
         set(_) {}
     override val color: Color
         get() = _color

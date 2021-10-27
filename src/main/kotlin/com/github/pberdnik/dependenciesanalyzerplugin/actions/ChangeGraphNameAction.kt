@@ -55,9 +55,10 @@ class ChangeGraphNameAction : AnAction {
         graph.codeFiles.add(
             CodeFile(
                 randomPath,
+                "custom",
+                "SomeClass.java",
                 0,
-                listOf(),
-                "custom"
+                listOf()
             )
         )
         val dlgMsg = "Added path: $randomPath"

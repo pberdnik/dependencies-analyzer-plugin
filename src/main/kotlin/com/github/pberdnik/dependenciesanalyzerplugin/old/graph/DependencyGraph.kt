@@ -55,7 +55,7 @@ class DependencyGraph {
         topSorted.forEach { node ->
             val onlyRed = node.onlyRed
             if (onlyRed != null) {
-                redNodes[onlyRed.id] = (redNodes[onlyRed.id] ?: 0) + node.codeFile.size
+                redNodes[onlyRed.id] = (redNodes[onlyRed.id] ?: 0) + node.codeFile.size.toInt()
             }
         }
     }
