@@ -52,7 +52,7 @@ class ChangeGraphNameAction : AnAction {
 //        val codeFiles = mutableSetOf<CodeFile>()
 //        codeFiles.add(CodeFile(randomPath, 0, listOf()))
 //        graph.codeFiles = codeFiles.toList()
-        graph.codeFiles.add(
+        graph.codeFiles[randomPath] =
             CodeFile(
                 randomPath,
                 "custom",
@@ -60,7 +60,6 @@ class ChangeGraphNameAction : AnAction {
                 0,
                 listOf()
             )
-        )
         val dlgMsg = "Added path: $randomPath"
         val dlgTitle = "Graph Name Changed"
         Messages.showMessageDialog(currentProject, dlgMsg, dlgTitle, Messages.getInformationIcon())

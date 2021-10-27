@@ -7,7 +7,10 @@ class ConfigJson(
     @Expose val graphXmlPath: String = "",
     @Expose val filteredModules: String = "",
     @Expose val filteredClasses: String = "",
-    @Expose val greenModules: String = "",
+    @Expose val greenModules: String = """
+        DependenciesExample.core
+        DependenciesExample.huge
+    """.trimIndent(),
     @Expose val greenClasses: String = "",
     @Expose val redClasses: String = ""
 ) {

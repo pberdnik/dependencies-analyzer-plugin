@@ -28,7 +28,7 @@ fun performAction(dependencies: MutableMap<PsiFile, MutableSet<PsiFile>>, projec
     }
 
     val state = storage.state
-    state.codeFiles = codeFiles.values.toList()
+    state.codeFiles = codeFiles
 
     storage.analyze()
 }

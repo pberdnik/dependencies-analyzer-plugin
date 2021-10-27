@@ -1,8 +1,11 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.views
 
+import com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.projectView.ProjectViewNode
 import com.intellij.ide.projectView.ProjectViewNodeDecorator
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import com.intellij.packageDependencies.ui.PackageDependenciesNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiUtilCore
@@ -16,13 +19,22 @@ private val RED_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JB
 private val YELLOW_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.YELLOW)
 private val GRAY_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.GRAY)
 
-class DependenciesProjectViewNodeDecorator : ProjectViewNodeDecorator {
+class DependenciesProjectViewNodeDecorator(val project: Project) : ProjectViewNodeDecorator {
+    private val LOG = Logger.getInstance(DependenciesProjectViewNodeDecorator::class.java)
+    private val storage = GraphStorageService.getInstance(project)
+
+    init {
+        LOG.warn("INIT; storage=$storage")
+    }
+
     override fun decorate(node: ProjectViewNode<*>?, data: PresentationData?) {
         if (node == null || data == null) return
         val value = node.value ?: return
         val file = node.virtualFile ?: PsiUtilCore.getVirtualFile(value as? PsiElement)
         val path = file?.path ?: return
-        val nodeView = nodeViews[path] ?: return
+        val nodeView = storage.nodeViews[path] ?: return
+        data.clearText()
+        data.presentableText = ""
         data.addText(file.name, REGULAR_TEXT)
         when (nodeView) {
             is DirNodeView -> with(nodeView) {

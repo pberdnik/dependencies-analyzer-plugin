@@ -3,9 +3,9 @@ package com.github.pberdnik.dependenciesanalyzerplugin.views
 sealed class NodeView
 
 class DirNodeView(
-    val greenSize: Int,
-    val redSize: Int,
-    val yellowSize: Int
+    var greenSize: Long = 0,
+    var redSize: Long = 0,
+    var yellowSize: Long = 0
 ) : NodeView()
 
 class FileNodeView(

@@ -2,13 +2,13 @@ package com.github.pberdnik.dependenciesanalyzerplugin.old.graph
 
 import com.github.pberdnik.dependenciesanalyzerplugin.old.file.CodeFile
 
-fun asDependencyGraph(codeFiles: MutableCollection<CodeFile>, config: GraphConfig): DependencyGraph {
+fun asDependencyGraph(codeFiles: MutableMap<String, CodeFile>, config: GraphConfig): DependencyGraph {
     val graph = DependencyGraph()
-    codeFiles.forEach { codeFile ->
+    codeFiles.forEach { (_, codeFile) ->
         if (!codeFile.isBad(config)) {
             codeFile.dependencies.forEach { dependentCodeFilePath ->
-                val dependentCodeFile = codeFiles.find { it.path == dependentCodeFilePath }!!
-                if (!dependentCodeFile.isBad(config)) {
+                val dependentCodeFile = codeFiles[dependentCodeFilePath]
+                if (dependentCodeFile != null && !dependentCodeFile.isBad(config)) {
                     graph.add(codeFile, dependentCodeFile)
                 }
             }
