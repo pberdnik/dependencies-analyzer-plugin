@@ -9,5 +9,6 @@ import javax.swing.*;
 public class SdkIcons {
 
   public static final Icon coloredGraph = IconLoader.getIcon("/icons/colored_graph_icon.svg", SdkIcons.class);
+  public static final Icon coloredGraph13 = IconLoader.getIcon("/icons/colored_graph_icon_13.svg", SdkIcons.class);
 
 }

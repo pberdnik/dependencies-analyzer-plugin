@@ -29,6 +29,9 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <projectService serviceImplementation="com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService"/>
+        <projectService serviceImplementation="com.github.pberdnik.dependenciesanalyzerplugin.toolwindow.FileDependenciesToolWindow"/>
         <projectViewNodeDecorator implementation="com.github.pberdnik.dependenciesanalyzerplugin.views.DependenciesProjectViewNodeDecorator" />
+        <toolWindow id="File Dependencies" secondary="true" icon="SdkIcons.coloredGraph13" anchor="right"
+                    factoryClass="com.github.pberdnik.dependenciesanalyzerplugin.toolwindow.FileDependenciesToolWindowFactory"/>
     </extensions>
 </idea-plugin>
