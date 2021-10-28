@@ -29,14 +29,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <projectService serviceImplementation="com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService"/>
-        <applicationService serviceImplementation="com.github.pberdnik.dependenciesanalyzerplugin.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.pberdnik.dependenciesanalyzerplugin.services.MyProjectService"/>
-
         <projectViewNodeDecorator implementation="com.github.pberdnik.dependenciesanalyzerplugin.views.DependenciesProjectViewNodeDecorator" />
     </extensions>
-
-    <applicationListeners>
-        <listener class="com.github.pberdnik.dependenciesanalyzerplugin.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
 </idea-plugin>
