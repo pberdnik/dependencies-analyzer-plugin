@@ -2,6 +2,7 @@ package com.github.pberdnik.dependenciesanalyzerplugin.toolwindow
 
 import com.intellij.ide.impl.ContentManagerWatcher
 import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
@@ -12,16 +13,20 @@ import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentManager
 
 class FileDependenciesToolWindow(private val project: Project) {
+    private val LOG = Logger.getInstance(FileDependenciesToolWindow::class.java)
+
     private var contentManager: ContentManager? = null
 
     fun initToolWindow(toolWindow: ToolWindow) {
         StartupManager.getInstance(project).runWhenProjectIsInitialized {
             contentManager = toolWindow.contentManager
-            ContentManagerWatcher.watchContentManager(toolWindow, contentManager!!)
+            toolWindow.setAvailable(true, null)
         }
     }
 
     fun addContent(content: Content) {
+        LOG.warn("addContent($content); contentManager=$contentManager", Exception())
+
         val contentManager = contentManager ?: return
         StartupManager.getInstance(project).runWhenProjectIsInitialized {
             contentManager.removeAllContents(false)

@@ -1,6 +1,7 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.pberdnik.dependenciesanalyzerplugin.panel;
 
+import com.esotericsoftware.minlog.Log;
 import com.github.pberdnik.dependenciesanalyzerplugin.actions.SaveAnalysisResultActionExtensionsKt;
 import com.github.pberdnik.dependenciesanalyzerplugin.toolwindow.FileDependenciesToolWindow;
 import com.intellij.CommonBundle;
@@ -67,6 +68,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -82,10 +84,8 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
 
   private static final Set<PsiFile> EMPTY_FILE_SET = new HashSet<>(0);
   private final TreeExpansionMonitor myRightTreeExpansionMonitor;
-  private final TreeExpansionMonitor myLeftTreeExpansionMonitor;
 
   private final Marker myRightTreeMarker;
-  private final Marker myLeftTreeMarker;
   private Set<VirtualFile> myIllegalsInRightTree = new HashSet<>();
 
   private final Project myProject;
@@ -116,29 +116,10 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
     exclude(excluded);
     myProject = project;
 
-    final Splitter treeSplitter = new Splitter();
-    Disposer.register(this, new Disposable() {
-      @Override
-      public void dispose() {
-        treeSplitter.dispose();
-      }
-    });
-    treeSplitter.setFirstComponent(ScrollPaneFactory.createScrollPane(myLeftTree));
-    treeSplitter.setSecondComponent(ScrollPaneFactory.createScrollPane(myRightTree));
-
-    final Splitter splitter = new Splitter(true);
-    Disposer.register(this, new Disposable() {
-      @Override
-      public void dispose() {
-        splitter.dispose();
-      }
-    });
-    splitter.setFirstComponent(treeSplitter);
-    add(splitter, BorderLayout.CENTER);
+    add(ScrollPaneFactory.createScrollPane(myRightTree), BorderLayout.CENTER);
     add(createToolbar(), BorderLayout.NORTH);
 
     myRightTreeExpansionMonitor = PackageTreeExpansionMonitor.install(myRightTree, myProject);
-    myLeftTreeExpansionMonitor = PackageTreeExpansionMonitor.install(myLeftTree, myProject);
 
     myRightTreeMarker = new Marker() {
       @Override
@@ -147,14 +128,6 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
       }
     };
 
-    myLeftTreeMarker = new Marker() {
-      @Override
-      public boolean isMarked(@NotNull VirtualFile file) {
-        return myIllegalDependencies.containsKey(file);
-      }
-    };
-
-    updateLeftTreeModel();
     updateRightTreeModel();
 
     MessageBusConnection connection = myProject.getMessageBus().connect(myProject);
@@ -172,48 +145,9 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
       }
     });
 
-    myLeftTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-      @Override
-      public void valueChanged(TreeSelectionEvent e) {
-        updateRightTreeModel();
-        final StringBuffer denyRules = new StringBuffer();
-        final StringBuffer allowRules = new StringBuffer();
-        final TreePath[] paths = myLeftTree.getSelectionPaths();
-        if (paths == null) {
-          return;
-        }
-        for (TreePath path : paths) {
-          PackageDependenciesNode selectedNode = (PackageDependenciesNode)path.getLastPathComponent();
-          traverseToLeaves(selectedNode, denyRules, allowRules);
-        }
-        if (denyRules.length() + allowRules.length() > 0) {
-          StatusBar.Info.set(CodeInsightBundle.message("status.bar.rule.violation.message",
-                  ((denyRules.length() == 0 || allowRules.length() == 0) ? 1 : 2),
-                  (denyRules.length() > 0 ? denyRules.toString() + (allowRules.length() > 0 ? "; " : "") : " ") +
-                          (allowRules.length() > 0 ? allowRules.toString() : " ")), myProject);
-        }
-        else {
-          StatusBar.Info.set(CodeInsightBundle.message("status.bar.no.rule.violation.message"), myProject);
-        }
-      }
-    });
-
-    initTree(myLeftTree, false);
     initTree(myRightTree, true);
 
     setEmptyText(mySettings.UI_FILTER_LEGALS);
-
-    if (builders.size() == 1) {
-      AnalysisScope scope = builders.get(0).getScope();
-      if (scope.getScopeType() == AnalysisScope.FILE) {
-        Set<PsiFile> oneFileSet = myDependencies.keySet();
-        if (oneFileSet.size() == 1) {
-          selectElementInLeftTree(oneFileSet.iterator().next());
-          return;
-        }
-      }
-    }
-    TreeUtil.promiseSelectFirst(myLeftTree);
   }
 
   private void putAllDependencies(MyDependenciesBuilder builder) {
@@ -279,12 +213,12 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
     group.add(new CloseAction());
     group.add(new RerunAction(this));
     group.add(new FlattenPackagesAction());
-    group.add(new ShowFilesAction());
+    mySettings.UI_SHOW_FILES = true;
     if (ModuleManager.getInstance(myProject).getModules().length > 1) {
-      group.add(new ShowModulesAction());
+      mySettings.UI_SHOW_MODULES = true;
       group.add(createFlattenModulesAction());
       if (ModuleManager.getInstance(myProject).hasModuleGroups()) {
-        group.add(new ShowModuleGroupsAction());
+        mySettings.UI_SHOW_MODULE_GROUPS = true;
       }
     }
     group.add(new GroupByScopeTypeAction());
@@ -313,7 +247,6 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
     for (MyDependenciesBuilder builder : myBuilders) {
       putAllDependencies(builder);
     }
-    updateLeftTreeModel();
     updateRightTreeModel();
   }
 
@@ -374,7 +307,6 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
     if (isRightTree) {
       group.add(actionManager.getAction(IdeActions.GROUP_ANALYZE));
       group.add(new AddToScopeAction());
-      group.add(new SelectInLeftTreeAction());
       group.add(new ShowDetailedInformationAction());
     } else {
       group.add(new RemoveFromScopeAction());
@@ -386,14 +318,6 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
   private TreeModel buildTreeModel(Set<PsiFile> deps, Marker marker) {
     return Objects.requireNonNull(PatternDialectProvider.getInstance(mySettings.SCOPE_TYPE)).createTreeModel(myProject, deps, marker,
             mySettings);
-  }
-
-  private void updateLeftTreeModel() {
-    Set<PsiFile> psiFiles = myDependencies.keySet();
-    myLeftTreeExpansionMonitor.freeze();
-    myLeftTree.setModel(buildTreeModel(psiFiles, myLeftTreeMarker));
-    myLeftTreeExpansionMonitor.restore();
-    expandFirstLevel(myLeftTree);
   }
 
   private static void expandFirstLevel(Tree tree) {
@@ -432,14 +356,6 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
     myContent = content;
   }
 
-  public JTree getLeftTree() {
-    return myLeftTree;
-  }
-
-  public JTree getRightTree() {
-    return myRightTree;
-  }
-
   @Override
   public void dispose() {
     FileTreeModelBuilder.clearCaches(myProject);
@@ -473,6 +389,10 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
             int row,
             boolean hasFocus
     ){
+      if (!(value instanceof PackageDependenciesNode)) {
+        Log.error("value type should be PackageDependenciesNode but is " + value.getClass() + "; And value is " + Arrays.toString(((DefaultMutableTreeNode) value).getPath()));
+        return;
+      }
       PackageDependenciesNode node = (PackageDependenciesNode)value;
       if (node.isValid()) {
         setIcon(node.getIcon());
@@ -513,73 +433,6 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
       DependencyUISettings.getInstance().UI_FLATTEN_PACKAGES = flag;
       mySettings.UI_FLATTEN_PACKAGES = flag;
       rebuild();
-    }
-  }
-
-  private final class ShowFilesAction extends ToggleAction {
-    ShowFilesAction() {
-      super(CodeInsightBundle.messagePointer("action.show.files"), CodeInsightBundle.messagePointer("action.show.files.description"),
-              AllIcons.FileTypes.Unknown);
-    }
-
-    @Override
-    public boolean isSelected(@NotNull AnActionEvent event) {
-      return mySettings.UI_SHOW_FILES;
-    }
-
-    @Override
-    public void setSelected(@NotNull AnActionEvent event, boolean flag) {
-      DependencyUISettings.getInstance().UI_SHOW_FILES = flag;
-      mySettings.UI_SHOW_FILES = flag;
-      if (!flag && myLeftTree.getSelectionPath() != null && myLeftTree.getSelectionPath().getLastPathComponent() instanceof FileNode){
-        TreeUtil.selectPath(myLeftTree, myLeftTree.getSelectionPath().getParentPath());
-      }
-      rebuild();
-    }
-  }
-
-  private final class ShowModulesAction extends ToggleAction {
-    ShowModulesAction() {
-      super(CodeInsightBundle.messagePointer("action.show.modules"), CodeInsightBundle.messagePointer("action.show.modules.description"),
-              AllIcons.Actions.GroupByModule);
-    }
-
-    @Override
-    public boolean isSelected(@NotNull AnActionEvent event) {
-      return mySettings.UI_SHOW_MODULES;
-    }
-
-    @Override
-    public void setSelected(@NotNull AnActionEvent event, boolean flag) {
-      DependencyUISettings.getInstance().UI_SHOW_MODULES = flag;
-      mySettings.UI_SHOW_MODULES = flag;
-      rebuild();
-    }
-  }
-
-  private final class ShowModuleGroupsAction extends ToggleAction {
-    ShowModuleGroupsAction() {
-      super(CodeInsightBundle.message("analyze.dependencies.show.module.groups.action.text"),
-              CodeInsightBundle.message("analyze.dependencies.show.module.groups.action.text"), AllIcons.Actions.GroupByModuleGroup);
-    }
-
-    @Override
-    public boolean isSelected(@NotNull AnActionEvent event) {
-      return mySettings.UI_SHOW_MODULE_GROUPS;
-    }
-
-    @Override
-    public void setSelected(@NotNull AnActionEvent event, boolean flag) {
-      DependencyUISettings.getInstance().UI_SHOW_MODULE_GROUPS = flag;
-      mySettings.UI_SHOW_MODULE_GROUPS = flag;
-      rebuild();
-    }
-
-    @Override
-    public void update(@NotNull final AnActionEvent e) {
-      super.update(e);
-      e.getPresentation().setVisible(ModuleManager.getInstance(myProject).hasModuleGroups());
-      e.getPresentation().setEnabled(mySettings.UI_SHOW_MODULES);
     }
   }
 

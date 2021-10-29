@@ -24,7 +24,7 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
     private val state = GraphState()
     var dependencyGraph = DependencyGraph()
         private set
-    val graphConfig = GraphConfig(Config())
+    val graphConfig = GraphConfig(project.guessProjectDir()?.path ?: "", Config())
     var nodeViews = mutableMapOf<String, NodeView>()
 
     override fun getState(): GraphState {

@@ -2,7 +2,10 @@ package com.github.pberdnik.dependenciesanalyzerplugin.old.graph
 
 import com.github.pberdnik.dependenciesanalyzerplugin.old.common.Config
 
-class GraphConfig(val config: Config) {
+class GraphConfig(
+    val projectDir: String,
+    val config: Config
+) {
     var filteredModules = mapFromString(config.filteredModules)
     var filteredClasses = mapFromString(config.filteredClasses)
 
