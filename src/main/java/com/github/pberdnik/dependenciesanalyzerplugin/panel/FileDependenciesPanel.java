@@ -316,8 +316,7 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
   }
 
   private TreeModel buildTreeModel(Set<PsiFile> deps, Marker marker) {
-    return Objects.requireNonNull(PatternDialectProvider.getInstance(mySettings.SCOPE_TYPE)).createTreeModel(myProject, deps, marker,
-            mySettings);
+    return MyFileTreeModelBuilder.createTreeModel(myProject, false, deps, marker, mySettings);
   }
 
   private static void expandFirstLevel(Tree tree) {
@@ -358,7 +357,7 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
 
   @Override
   public void dispose() {
-    FileTreeModelBuilder.clearCaches(myProject);
+    MyFileTreeModelBuilder.clearCaches(myProject);
   }
 
   @Override

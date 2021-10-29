@@ -130,7 +130,7 @@ public class MyForwardDependenciesBuilder extends MyDependenciesBuilder {
             PsiFile dependencyFile = dependency.getContainingFile();
             if (dependencyFile != null) {
               if (viewProvider == dependencyFile.getViewProvider()) return;
-              if (dependencyFile.isPhysical()) {
+              if (dependencyFile.isPhysical() || isJavaHasKotlin(psiFile, dependencyFile)) {
                 final VirtualFile depFile = dependencyFile.getVirtualFile();
                 if (depFile != null
                     && (fileIndex.isInContent(depFile) || fileIndex.isInLibrary(depFile))
@@ -155,6 +155,15 @@ public class MyForwardDependenciesBuilder extends MyDependenciesBuilder {
       collectedDeps.removeAll(processed);
     }
     while (isTransitive() && !collectedDeps.isEmpty());
+  }
+
+  /**
+   * For some reason during analysis Java class, dependencyFile.isPhysical() for Kotlin class returns false
+   * and hence dependency is wrongly skipped. This check prevents such scenario
+   */
+  private boolean isJavaHasKotlin(PsiFile psiFile, PsiFile dependencyFile) {
+    return "java".equals(psiFile.getFileType().getDefaultExtension()) &&
+            "kt".equals(dependencyFile.getFileType().getDefaultExtension());
   }
 
   @NotNull
