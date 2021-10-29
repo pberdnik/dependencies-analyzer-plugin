@@ -16,6 +16,7 @@
 
 package com.github.pberdnik.dependenciesanalyzerplugin.panel;
 
+import com.github.pberdnik.dependenciesanalyzerplugin.actions.SaveAnalysisResultActionExtensionsKt;
 import com.github.pberdnik.dependenciesanalyzerplugin.toolwindow.FileDependenciesToolWindow;
 import com.intellij.analysis.AnalysisScope;
 import com.intellij.analysis.PerformAnalysisInBackgroundOption;
@@ -119,8 +120,12 @@ public class FileAnalyzeDependenciesHandler {
       for (MyDependenciesBuilder builder : builders) {
         builder.analyze();
       }
-    }
-    catch (IndexNotReadyException e) {
+      Map<PsiFile, Set<PsiFile>> myDependencies = new HashMap<>();
+      for (MyDependenciesBuilder builder : builders) {
+        myDependencies.putAll(builder.getDependencies());
+      }
+      SaveAnalysisResultActionExtensionsKt.performAction(myDependencies, myProject);
+    } catch (IndexNotReadyException e) {
       DumbService.getInstance(myProject).showDumbModeNotification(
               CodeInsightBundle.message("analyze.dependencies.not.available.notification.indexing"));
       throw new ProcessCanceledException();

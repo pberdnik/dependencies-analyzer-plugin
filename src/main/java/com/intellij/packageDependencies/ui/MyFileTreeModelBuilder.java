@@ -107,7 +107,7 @@ public class MyFileTreeModelBuilder {
         myTree = tree;
     }
 
-    public static synchronized TreeModel createTreeModel(Project project, boolean showProgress, Set<? extends PsiFile> files, Marker marker, DependenciesPanel.DependencyPanelSettings settings) {
+    public static synchronized TreeModel createTreeModel(Project project, boolean showProgress, Set<VirtualFile> files, Marker marker, DependenciesPanel.DependencyPanelSettings settings) {
         return new MyFileTreeModelBuilder(project, marker, settings).build(files, showProgress);
     }
 
@@ -204,15 +204,15 @@ public class MyFileTreeModelBuilder {
         }
     }
 
-    private TreeModel build(final Set<? extends PsiFile> files, boolean showProgress) {
+    private TreeModel build(final Set<VirtualFile> files, boolean showProgress) {
         if (files.size() == 1) {
             myShowFiles = true;
         }
 
         Runnable buildingRunnable = () -> {
-            for (final PsiFile file : files) {
+            for (final VirtualFile file : files) {
                 if (file != null) {
-                    ReadAction.run(() -> buildFileNode(file.getVirtualFile(), null));
+                    ReadAction.run(() -> buildFileNode(file, null));
                 }
             }
         };

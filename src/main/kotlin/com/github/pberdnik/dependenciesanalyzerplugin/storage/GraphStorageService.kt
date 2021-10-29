@@ -13,8 +13,10 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.xmlb.XmlSerializerUtil
+import org.jetbrains.annotations.NonNls
 import java.nio.file.Paths
 
 @State(name = "DependenciesGraph", storages = [Storage("dependenciesInfo.xml")])
@@ -26,6 +28,7 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
         private set
     val graphConfig = GraphConfig(project.guessProjectDir()?.path ?: "", Config())
     var nodeViews = mutableMapOf<String, NodeView>()
+    val virtualFileManager = VirtualFileManager.getInstance()
 
     override fun getState(): GraphState {
         return state
@@ -38,9 +41,8 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
     fun analyze() {
         dependencyGraph = asDependencyGraph(state.codeFiles, graphConfig)
         dependencyGraph.process(graphConfig)
-        val virtualFileManager = VirtualFileManager.getInstance()
         val projectDir = project.guessProjectDir()
-        dependencyGraph.nodes.forEach { node ->
+        dependencyGraph.nodes.forEach { (_, node) ->
             val virtualFile = virtualFileManager.findFileByNioPath(Paths.get(node.path))
             if (virtualFile == null) {
                 LOG.error("Can't find virtual file for path: ${node.path}")
@@ -68,6 +70,11 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
                 parent = parent.parent
             }
         }
+    }
+
+    fun getInfoForPath(path: @NonNls String): List<VirtualFile> {
+        val node = dependencyGraph.nodes[path] ?: return mutableListOf()
+        return node.dependencies.mapNotNull { dep -> virtualFileManager.findFileByNioPath(Paths.get(dep.path)) }
     }
 
     companion object {

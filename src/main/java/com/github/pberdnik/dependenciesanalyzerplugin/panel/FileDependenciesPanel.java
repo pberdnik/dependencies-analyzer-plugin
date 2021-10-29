@@ -3,16 +3,14 @@ package com.github.pberdnik.dependenciesanalyzerplugin.panel;
 
 import com.esotericsoftware.minlog.Log;
 import com.github.pberdnik.dependenciesanalyzerplugin.actions.SaveAnalysisResultActionExtensionsKt;
+import com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService;
 import com.github.pberdnik.dependenciesanalyzerplugin.toolwindow.FileDependenciesToolWindow;
 import com.intellij.CommonBundle;
 import com.intellij.analysis.AnalysisScope;
 import com.intellij.analysis.PerformAnalysisInBackgroundOption;
 import com.intellij.codeInsight.CodeInsightBundle;
 import com.intellij.codeInsight.hint.HintUtil;
-import com.intellij.configurationStore.JbXmlOutputter;
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.CommonActionsManager;
-import com.intellij.ide.ExporterToTextFile;
 import com.intellij.ide.impl.FlattenModulesToggleAction;
 import com.intellij.idea.ActionsBundle;
 import com.intellij.lang.LangBundle;
@@ -31,15 +29,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.StatusBar;
 import com.intellij.packageDependencies.*;
 import com.intellij.packageDependencies.actions.AnalyzeDependenciesHandler;
-import com.intellij.packageDependencies.actions.BackwardDependenciesHandler;
 import com.intellij.packageDependencies.actions.MyBackwardDependenciesBuilder;
 import com.intellij.packageDependencies.actions.MyForwardDependenciesBuilder;
 import com.intellij.packageDependencies.ui.*;
@@ -60,19 +54,15 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.intellij.xml.util.XmlStringUtil;
 import icons.SdkIcons;
-import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
@@ -97,6 +87,7 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
 
   private final AnalysisScope myScopeOfInterest;
   private final int myTransitiveBorder;
+  private final GraphStorageService mGraphStorageService;
 
   private PsiFile mSelectedPsiFile;
 
@@ -115,6 +106,7 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
     }
     exclude(excluded);
     myProject = project;
+    mGraphStorageService = GraphStorageService.Companion.getInstance(project);
 
     add(ScrollPaneFactory.createScrollPane(myRightTree), BorderLayout.CENTER);
     add(createToolbar(), BorderLayout.NORTH);
@@ -264,10 +256,12 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
   }
 
   private void updateRightTreeModel() {
-    Set<PsiFile> deps = new HashSet<>();
+    Set<VirtualFile> deps = new HashSet<>();
     Set<PsiFile> scope = new HashSet<>();
+    Set<VirtualFile> vScope = new HashSet<>();
     if (mSelectedPsiFile != null) {
       scope.add(mSelectedPsiFile);
+      vScope.add(mSelectedPsiFile.getVirtualFile());
     } else {
       return;
     }
@@ -282,16 +276,14 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
           }
         }
       }
-      final Set<PsiFile> psiFiles = myDependencies.get(psiFile);
-      if (psiFiles != null) {
-        for (PsiFile file : psiFiles) {
-          if (file != null && file.isValid()) {
-            deps.add(file);
-          }
+      final List<VirtualFile> fileDeps = mGraphStorageService.getInfoForPath(psiFile.getVirtualFile().getPath()); //
+      for (VirtualFile file : fileDeps) {
+        if (file != null && file.isValid()) {
+          deps.add(file);
         }
       }
     }
-    deps.removeAll(scope);
+    deps.removeAll(vScope);
     myRightTreeExpansionMonitor.freeze();
     myRightTree.setModel(buildTreeModel(deps, myRightTreeMarker));
     myRightTreeExpansionMonitor.restore();
@@ -315,7 +307,7 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
     return group;
   }
 
-  private TreeModel buildTreeModel(Set<PsiFile> deps, Marker marker) {
+  private TreeModel buildTreeModel(Set<VirtualFile> deps, Marker marker) {
     return MyFileTreeModelBuilder.createTreeModel(myProject, false, deps, marker, mySettings);
   }
 

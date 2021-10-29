@@ -3,7 +3,7 @@ package com.github.pberdnik.dependenciesanalyzerplugin.old.graph
 import com.github.pberdnik.dependenciesanalyzerplugin.old.file.CodeFile
 
 class DependencyGraph {
-    val nodes = mutableSetOf<Node>()
+    val nodes = mutableMapOf<String, Node>()
     val topSorted = mutableListOf<Node>()
 
     val redNodes = mutableMapOf<String, Int>()
@@ -11,20 +11,17 @@ class DependencyGraph {
 
     private val nodesInProcess = mutableListOf<Node>()
 
-    fun add(codeFile: CodeFile) {
-        nodes.add(Node(codeFile))
-    }
-
-    fun add(node: Node) {
-        nodes.add(node)
+    private fun add(codeFile: CodeFile): Node {
+        return nodes[codeFile.path] ?: run {
+            val newNode = Node(codeFile)
+            nodes[codeFile.path] = newNode
+            newNode
+        }
     }
 
     fun add(codeFile: CodeFile, dependentCodeFile: CodeFile) {
-        add(codeFile)
-        add(dependentCodeFile)
-        val node = getById(codeFile.path)
-        val dependentNode = getById(dependentCodeFile.path)
-
+        val node = add(codeFile)
+        val dependentNode = add(dependentCodeFile)
         node.dependencies.add(dependentNode)
         dependentNode.backwardDependencies.add(node)
     }
@@ -61,10 +58,10 @@ class DependencyGraph {
     }
 
     private fun runDfs() {
-        for (node in nodes) {
+        for (node in nodes.values) {
             node._color = Color.WHITE
         }
-        for (node in nodes) {
+        for (node in nodes.values) {
             if (node._color == Color.WHITE) {
                 dfs(node)
             }
@@ -118,9 +115,5 @@ class DependencyGraph {
             node.depth =
                 node.dependencies.filter { it._color == Color.RED }.maxByOrNull { it.depth }?.depth?.plus(1) ?: 0
         }
-    }
-
-    private fun getById(id: String): Node {
-        return nodes.find { it.id == id }!!
     }
 }
