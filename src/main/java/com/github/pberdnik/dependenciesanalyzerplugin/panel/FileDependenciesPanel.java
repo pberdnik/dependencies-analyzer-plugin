@@ -256,7 +256,9 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
   }
 
   private void updateRightTreeModel() {
-    Set<VirtualFile> deps = new HashSet<>();
+    Set<VirtualFile> forwardDeps = new HashSet<>();
+    Set<VirtualFile> backwardDeps = new HashSet<>();
+    Set<VirtualFile> cycleDeps = new HashSet<>();
     Set<PsiFile> scope = new HashSet<>();
     Set<VirtualFile> vScope = new HashSet<>();
     if (mSelectedPsiFile != null) {
@@ -276,16 +278,29 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
           }
         }
       }
-      final List<VirtualFile> fileDeps = mGraphStorageService.getInfoForPath(psiFile.getVirtualFile().getPath()); //
-      for (VirtualFile file : fileDeps) {
+      final List<VirtualFile> forwardFiles = mGraphStorageService.getForwardDepsForPath(psiFile.getVirtualFile().getPath()); //
+      for (VirtualFile file : forwardFiles) {
         if (file != null && file.isValid()) {
-          deps.add(file);
+          forwardDeps.add(file);
+        }
+      }
+      final List<VirtualFile> backwardFiles = mGraphStorageService.getBackwardDepsForPath(psiFile.getVirtualFile().getPath()); //
+      for (VirtualFile file : backwardFiles) {
+        if (file != null && file.isValid()) {
+          backwardDeps.add(file);
+        }
+      }
+      final List<VirtualFile> cycleFiles = mGraphStorageService.getCycleDepsForPath(psiFile.getVirtualFile().getPath()); //
+      for (VirtualFile file : cycleFiles) {
+        if (file != null && file.isValid()) {
+          cycleDeps.add(file);
         }
       }
     }
-    deps.removeAll(vScope);
+    forwardDeps.removeAll(vScope);
+    backwardDeps.removeAll(vScope);
     myRightTreeExpansionMonitor.freeze();
-    myRightTree.setModel(buildTreeModel(deps, myRightTreeMarker));
+    myRightTree.setModel(buildTreeModel(forwardDeps, backwardDeps, cycleDeps, myRightTreeMarker));
     myRightTreeExpansionMonitor.restore();
     expandFirstLevel(myRightTree);
   }
@@ -307,8 +322,8 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
     return group;
   }
 
-  private TreeModel buildTreeModel(Set<VirtualFile> deps, Marker marker) {
-    return MyFileTreeModelBuilder.createTreeModel(myProject, false, deps, marker, mySettings);
+  private TreeModel buildTreeModel(Set<VirtualFile> forwardDeps, Set<VirtualFile> backwardDeps, Set<VirtualFile> cycleDeps, Marker marker) {
+    return MyFileTreeModelBuilder.createTreeModel(myProject, false, forwardDeps, backwardDeps, cycleDeps, marker, mySettings);
   }
 
   private static void expandFirstLevel(Tree tree) {

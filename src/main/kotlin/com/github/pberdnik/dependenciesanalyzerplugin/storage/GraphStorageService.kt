@@ -72,9 +72,19 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
         }
     }
 
-    fun getInfoForPath(path: @NonNls String): List<VirtualFile> {
+    fun getForwardDepsForPath(path: @NonNls String): List<VirtualFile> {
         val node = dependencyGraph.nodes[path] ?: return mutableListOf()
         return node.dependencies.mapNotNull { dep -> virtualFileManager.findFileByNioPath(Paths.get(dep.path)) }
+    }
+
+    fun getBackwardDepsForPath(path: @NonNls String): List<VirtualFile> {
+        val node = dependencyGraph.nodes[path] ?: return mutableListOf()
+        return node.backwardDependencies.mapNotNull { dep -> virtualFileManager.findFileByNioPath(Paths.get(dep.path)) }
+    }
+
+    fun getCycleDepsForPath(path: @NonNls String): List<VirtualFile> {
+        val node = dependencyGraph.nodes[path] ?: return mutableListOf()
+        return node.cycle?.nodes?.mapNotNull { dep -> virtualFileManager.findFileByNioPath(Paths.get(dep.path)) } ?: mutableListOf()
     }
 
     companion object {
