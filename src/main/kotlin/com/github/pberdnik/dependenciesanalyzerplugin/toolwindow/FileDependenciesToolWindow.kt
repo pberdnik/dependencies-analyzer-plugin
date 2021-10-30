@@ -1,10 +1,7 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.toolwindow
 
-import com.intellij.ide.impl.ContentManagerWatcher
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.wm.ToolWindow
@@ -29,7 +26,7 @@ class FileDependenciesToolWindow(private val project: Project) {
 
         val contentManager = contentManager ?: return
         StartupManager.getInstance(project).runWhenProjectIsInitialized {
-            contentManager.removeAllContents(false)
+//            contentManager.removeAllContents(false)
             contentManager.addContent(content)
             contentManager.setSelectedContent(content)
             ToolWindowManager.getInstance(project).getToolWindow("File Dependencies")!!.activate(null)

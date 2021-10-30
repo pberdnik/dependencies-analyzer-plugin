@@ -30,13 +30,9 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
     var nodeViews = mutableMapOf<String, NodeView>()
     val virtualFileManager = VirtualFileManager.getInstance()
 
-    override fun getState(): GraphState {
-        return state
-    }
+    override fun getState() = state
 
-    override fun loadState(state: GraphState) {
-        XmlSerializerUtil.copyBean<GraphState>(state, this.state)
-    }
+    override fun loadState(state: GraphState) = XmlSerializerUtil.copyBean<GraphState>(state, this.state)
 
     fun analyze() {
         dependencyGraph = asDependencyGraph(state.codeFiles, graphConfig)
