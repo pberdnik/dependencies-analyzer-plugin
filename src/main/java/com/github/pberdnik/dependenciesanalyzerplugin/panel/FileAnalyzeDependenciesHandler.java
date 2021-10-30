@@ -22,6 +22,7 @@ import com.intellij.analysis.AnalysisScope;
 import com.intellij.analysis.PerformAnalysisInBackgroundOption;
 import com.intellij.codeInsight.CodeInsightBundle;
 import com.intellij.diagnostic.PerformanceWatcher;
+import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -144,6 +145,7 @@ public class FileAnalyzeDependenciesHandler {
         FileDependenciesToolWindow.Companion.getInstance(myProject).addContent(content);
       }
     });
+    ProjectView.getInstance(myProject).refresh();
   }
 
   private @NlsContexts.TabTitle String getPanelDisplayName(List<? extends MyDependenciesBuilder> builders) {
