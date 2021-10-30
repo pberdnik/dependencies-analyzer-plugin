@@ -14,9 +14,9 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleTextAttributes
 
 private val REGULAR_TEXT = SimpleTextAttributes.REGULAR_ATTRIBUTES
-private val GREEN_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.GREEN)
-private val RED_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.RED)
-private val YELLOW_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.YELLOW)
+private val GREEN_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor(JBColor.green.darker(), JBColor.green))
+private val RED_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor(JBColor.red.darker(), JBColor.red))
+private val YELLOW_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor(JBColor.yellow.darker(), JBColor.yellow))
 private val GRAY_TEXT = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.GRAY)
 
 class DependenciesProjectViewNodeDecorator(val project: Project) : ProjectViewNodeDecorator {
