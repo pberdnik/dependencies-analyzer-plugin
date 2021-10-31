@@ -5,6 +5,9 @@ import com.esotericsoftware.minlog.Log;
 import com.github.pberdnik.dependenciesanalyzerplugin.actions.SaveAnalysisResultActionExtensionsKt;
 import com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService;
 import com.github.pberdnik.dependenciesanalyzerplugin.toolwindow.FileDependenciesToolWindow;
+import com.github.pberdnik.dependenciesanalyzerplugin.views.FileNodeView;
+import com.github.pberdnik.dependenciesanalyzerplugin.views.FileNodeViewColor;
+import com.github.pberdnik.dependenciesanalyzerplugin.views.NodeView;
 import com.intellij.CommonBundle;
 import com.intellij.analysis.AnalysisScope;
 import com.intellij.analysis.PerformAnalysisInBackgroundOption;
@@ -63,8 +66,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.io.File;
 import java.util.List;
 import java.util.*;
+
+import static com.github.pberdnik.dependenciesanalyzerplugin.views.DependenciesProjectViewNodeDecoratorKt.*;
 
 public final class FileDependenciesPanel extends JPanel implements Disposable, DataProvider {
   private final Map<PsiFile, Set<PsiFile>> myDependencies;
@@ -243,7 +249,7 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
   }
 
   private void initTree(final MyTree tree, boolean isRightTree) {
-    tree.setCellRenderer(new MyTreeCellRenderer());
+    tree.setCellRenderer(new MyTreeCellRenderer(mGraphStorageService));
     tree.setRootVisible(false);
     tree.setShowsRootHandles(true);
 
@@ -385,6 +391,16 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
   }
 
   private static class MyTreeCellRenderer extends ColoredTreeCellRenderer {
+    private static final SimpleTextAttributes REGULAR_TEXT = SimpleTextAttributes.REGULAR_ATTRIBUTES;
+    private static final SimpleTextAttributes GREEN_TEXT = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, new JBColor(JBColor.green.darker(), JBColor.green));
+    private static final SimpleTextAttributes RED_TEXT = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, new JBColor(JBColor.red.darker(), JBColor.red));
+    private static final SimpleTextAttributes YELLOW_TEXT = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, new JBColor(JBColor.yellow.darker(), JBColor.yellow));
+    private static final SimpleTextAttributes GRAY_TEXT = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.GRAY);
+    GraphStorageService mGraphStorageService;
+
+    MyTreeCellRenderer(GraphStorageService graphStorageService) {
+      mGraphStorageService = graphStorageService;
+    }
     @Override
     public void customizeCellRenderer(
             @NotNull JTree tree,
@@ -406,7 +422,27 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
         append(UsageViewBundle.message("node.invalid") + " ", SimpleTextAttributes.ERROR_ATTRIBUTES);
       }
       append(node.toString(), node.hasMarked() && !selected ? SimpleTextAttributes.ERROR_ATTRIBUTES : SimpleTextAttributes.REGULAR_ATTRIBUTES);
-      append(node.getPresentableFilesCount(), SimpleTextAttributes.GRAYED_ATTRIBUTES);
+      PsiElement psiElement = node.getPsiElement();
+      if (psiElement instanceof PsiFile) {
+        String path = ((PsiFile) psiElement).getVirtualFile().getPath();
+        NodeView nodeView = mGraphStorageService.getNodeViews().get(path);
+        if (nodeView instanceof FileNodeView) {
+          FileNodeView fileNodeView = (FileNodeView) nodeView;
+          SimpleTextAttributes textColor = REGULAR_TEXT;
+          FileNodeViewColor fileNodeViewColor = fileNodeView.getColor();
+          if (fileNodeViewColor == FileNodeViewColor.GREEN) {
+            textColor = GREEN_TEXT;
+          } else if (fileNodeViewColor == FileNodeViewColor.RED) {
+            textColor = RED_TEXT;
+          } else if (fileNodeViewColor == FileNodeViewColor.YELLOW) {
+            textColor = YELLOW_TEXT;
+          } else if (fileNodeViewColor == FileNodeViewColor.GRAY) {
+            textColor = GRAY_TEXT;
+          }
+          append(" " + fileNodeView.getSize() + " [" + fileNodeView.getDepth() + "]", textColor);
+          if (fileNodeView.isCycle()) append(" {C}", RED_TEXT);
+        }
+      }
     }
   }
 
