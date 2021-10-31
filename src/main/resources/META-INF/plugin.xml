@@ -7,23 +7,11 @@
     <depends>com.intellij.modules.platform</depends>
 
     <actions>
-        <action id="com.github.pberdnik.dependenciesanalyzerplugin.actions.PopupDialogAction" class="com.github.pberdnik.dependenciesanalyzerplugin.actions.PopupDialogAction"
-                text="Action Basics Plugin: Show Graph Name" description="SDK action example"
-                icon="SdkIcons.coloredGraph">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <override-text place="MainMenu" text="Show Code Files Size"/>
-        </action>
-        <action id="com.github.pberdnik.dependenciesanalyzerplugin.actions.ChangeGraphNameAction" class="com.github.pberdnik.dependenciesanalyzerplugin.actions.ChangeGraphNameAction"
-                text="Action Basics Plugin: Change Graph Name" description="SDK action example"
-                icon="SdkIcons.coloredGraph">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <override-text place="MainMenu" text="Add Random Path To CodeFiles"/>
-        </action>
         <action id="com.intellij.packageDependencies.actions.MyAnalyzeDependenciesAction" class="com.intellij.packageDependencies.actions.MyAnalyzeDependenciesAction"
-                text="Action Basics Plugin: Change Graph Name" description="SDK action example"
+                text="Extended Analyze Dependencies" description="Extended analyze dependencies"
                 icon="SdkIcons.coloredGraph">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <override-text place="MainMenu" text="Analyze Dependencies"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <override-text place="MainMenu" text="Extended Analyze Dependencies"/>
         </action>
     </actions>
 

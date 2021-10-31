@@ -209,7 +209,6 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
   private JComponent createToolbar() {
     DefaultActionGroup group = new DefaultActionGroup();
     group.add(new CloseAction());
-    group.add(new RerunAction(this));
     group.add(new FlattenPackagesAction());
     mySettings.UI_SHOW_FILES = true;
     if (ModuleManager.getInstance(myProject).getModules().length > 1) {
@@ -225,7 +224,6 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
     group.add(new MarkAsIllegalAction());
     group.add(new ChooseScopeTypeAction());
     group.add(new EditDependencyRulesAction());
-    group.add(new SaveAnalysisResultAction());
 
     ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("PackageDependencies", group, true);
     return toolbar.getComponent();
@@ -536,48 +534,6 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
       if (applied) {
         rebuild();
       }
-    }
-  }
-
-  class SaveAnalysisResultAction extends AnAction {
-    SaveAnalysisResultAction() {
-      super("Save Analysis Result", "Save", SdkIcons.coloredGraph);
-    }
-
-    @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-      SaveAnalysisResultActionExtensionsKt.performAction(myDependencies, myProject);
-    }
-  }
-
-  private class RerunAction extends AnAction {
-    RerunAction(JComponent comp) {
-      super(CommonBundle.message("action.rerun"), CodeInsightBundle.message("action.rerun.dependency"), AllIcons.Actions.Rerun);
-      registerCustomShortcutSet(CommonShortcuts.getRerun(), comp);
-    }
-
-    @Override
-    public void update(@NotNull AnActionEvent e) {
-      boolean enabled = true;
-      for (MyDependenciesBuilder builder : myBuilders) {
-        enabled &= builder.getScope().isValid();
-      }
-      e.getPresentation().setEnabled(enabled);
-    }
-
-    @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-      FileDependenciesToolWindow.Companion.getInstance(myProject).closeContent(myContent);
-      mySettings.copyToApplicationDependencySettings();
-      SwingUtilities.invokeLater(() -> {
-        final List<AnalysisScope> scopes = new ArrayList<>();
-        for (MyDependenciesBuilder builder : myBuilders) {
-          final AnalysisScope scope = builder.getScope();
-          scope.invalidate();
-          scopes.add(scope);
-        }
-        new AnalyzeDependenciesHandler(myProject, scopes, myTransitiveBorder, myExcluded).analyze();
-      });
     }
   }
 
