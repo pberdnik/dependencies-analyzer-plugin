@@ -1,6 +1,5 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.storage
 
-import com.github.pberdnik.dependenciesanalyzerplugin.old.common.Config
 import com.github.pberdnik.dependenciesanalyzerplugin.old.graph.*
 import com.github.pberdnik.dependenciesanalyzerplugin.views.DirNodeView
 import com.github.pberdnik.dependenciesanalyzerplugin.views.FileNodeView
@@ -26,7 +25,7 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
     private val state = GraphState()
     var dependencyGraph = DependencyGraph()
         private set
-    val graphConfig = GraphConfig(project.guessProjectDir()?.path ?: "", Config())
+    val graphConfig = GraphConfig(project)
     var nodeViews = mutableMapOf<String, NodeView>()
     val virtualFileManager = VirtualFileManager.getInstance()
 

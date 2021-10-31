@@ -1,10 +1,8 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.actions
 
-import com.github.pberdnik.dependenciesanalyzerplugin.old.common.Config
 import com.github.pberdnik.dependenciesanalyzerplugin.old.file.CodeFile
 import com.github.pberdnik.dependenciesanalyzerplugin.old.graph.GraphConfig
 import com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService.Companion.getInstance
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile

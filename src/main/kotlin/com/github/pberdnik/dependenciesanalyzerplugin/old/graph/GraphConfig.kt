@@ -1,19 +1,20 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.old.graph
 
-import com.github.pberdnik.dependenciesanalyzerplugin.old.common.Config
+import com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphConfigStorageService
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 
 class GraphConfig(
-    val projectDir: String,
-    val config: Config
+    val project: Project
 ) {
-    var filteredModules = mapFromString(config.filteredModules)
-    var filteredClasses = mapFromString(config.filteredClasses)
+    val projectDir: String = project.guessProjectDir()?.path ?: ""
 
-    var greenModules = mapFromString(config.greenModules)
-    var greenClasses = mapFromString(config.greenClasses)
-    var redClasses = mapFromString(config.redClasses)
+    val graphConfigState = GraphConfigStorageService.getInstance(project).state
 
-    private fun mapFromString(str: String): MutableSet<String> {
-        return str.lines().filter { it.isNotBlank() }.toMutableSet()
-    }
+    var filteredModules = mutableSetOf<String>()
+    var filteredClasses = mutableSetOf<String>()
+
+    val greenModules get() = graphConfigState.greenModules
+    var greenClasses = mutableSetOf<String>()
+    var redClasses = mutableSetOf<String>()
 }
