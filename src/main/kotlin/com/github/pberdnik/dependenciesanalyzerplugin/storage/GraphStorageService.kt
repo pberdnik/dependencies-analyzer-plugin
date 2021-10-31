@@ -45,7 +45,7 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
                 return@forEach
             }
             val path = virtualFile.path
-            val fileNodeView = FileNodeView(node.asNodeViewColor(), node.codeFile.size, node.depth, node.cycle != null)
+            val fileNodeView = FileNodeView(node.asNodeViewColor(), node.codeFile.size / 50, node.depth, node.cycle != null)
             if (nodeViews.containsKey(path)) {
                 LOG.error("nodeViews already contains path [$path] with value: ${nodeViews[path]}")
             }
