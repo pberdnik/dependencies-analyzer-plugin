@@ -37,6 +37,7 @@ class GraphStorageService(val project: Project) : PersistentStateComponent<Graph
         dependencyGraph = asDependencyGraph(state.codeFiles, graphConfig)
         dependencyGraph.process(graphConfig)
         val projectDir = project.guessProjectDir()
+        nodeViews.clear()
         dependencyGraph.nodes.forEach { (_, node) ->
             val virtualFile = virtualFileManager.findFileByNioPath(Paths.get(node.path))
             if (virtualFile == null) {
