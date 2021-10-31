@@ -11,6 +11,8 @@ import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.content.ContentManager
 
+private const val GREEN_MODULES = "Green Modules"
+
 class FileDependenciesToolWindow(private val project: Project) {
     private val LOG = Logger.getInstance(FileDependenciesToolWindow::class.java)
 
@@ -22,7 +24,7 @@ class FileDependenciesToolWindow(private val project: Project) {
             toolWindow.setAvailable(true, null)
 
             val panel = ModulesPanel(project)
-            val content = ContentFactory.SERVICE.getInstance().createContent(panel, "Green Modules", false)
+            val content = ContentFactory.SERVICE.getInstance().createContent(panel, GREEN_MODULES, false)
             addContent(content)
         }
     }
@@ -31,9 +33,19 @@ class FileDependenciesToolWindow(private val project: Project) {
         val contentManager = contentManager ?: return
         StartupManager.getInstance(project).runWhenProjectIsInitialized {
 //            contentManager.removeAllContents(false)
+            removeContentsExceptModules(contentManager)
             contentManager.addContent(content)
             contentManager.setSelectedContent(content)
             ToolWindowManager.getInstance(project).getToolWindow("File Dependencies")!!.activate(null)
+        }
+    }
+
+    private fun removeContentsExceptModules(contentManager: ContentManager) {
+        val contents = contentManager.contents.clone()
+        contents.forEach { content ->
+            if (!content.displayName.equals(GREEN_MODULES)) {
+                contentManager.removeContent(content, true)
+            }
         }
     }
 
