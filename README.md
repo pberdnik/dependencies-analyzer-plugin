@@ -4,23 +4,46 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
 
-## Template ToDo list
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [ ] Get known with the [template documentation][template].
-- [ ] Verify the [pluginGroup](/gradle.properties), [plugin ID](/src/main/resources/META-INF/plugin.xml) and [sources package](/src/main/kotlin).
-- [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html).
-- [ ] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time.
-- [ ] Set the Plugin ID in the above README badges.
-- [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html).
-- [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
+## Описание
 
-<!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+Плагин помогает с выносом маленького модуля из большого, размечая классы по сложности переноса.
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+### Пример:
+Проект:
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
-<!-- Plugin description end -->
+Допустим, `huge` -- большой модуль, из которого хотим перенести классы в новый модуль.
+Для этого на вкладке `Green Modules` отмечаем сам модуль `huge` и модули, от которых будет зависеть новый -- допустим, только от `core`
+
+![](res/config_example.png?raw=true)
+
+В дереве проектов выбираем модуль `huge`, в верхнем тулбаре плагина нажимаем кнопку с друмя стрелками (`Run Full Analysis`),
+уточняем скоуп в диалоговом окне и запускаем анализ.
+
+p.s. Для больших проектов анализ может быть долгим, поэтому результат сохраняется в .idea.
+И если изменений в коде не было, то на вкладке `Green Modules` можно поменять выбор модулей и 
+перезапустить анализ второй кнопкой (`Run Graph Analysis`)
+
+![](res/run_example.png?raw=true)
+
+В результате классы размечаются в следующем формате:
+
+`Name.class *размер файла* [*глубина зависимости*] {*наличие цикла*}`
+
+где *глубина зависимоти* = *максимальная глубина из всех зависимостей класса* + 1
+
+Цвет: зеленый -- можно просто перенести, желтый -- переносу мешает одна зависимость, красный -- переносу мешает больше одной зависимости.
+
+Примеры:
+
+`Green2.java 1 [0]` -- у класса нет зависимостей, поэтому глубина 0
+
+`Green1.java 4 [1]` -- у класса есть только зеленые зависимости глубиной 0, так что его глубина на 1 больше
+
+`Cycle1.java 2 [2] {C}` -- у класса только одна зависимость, мешающая переносу. {C} -- класс участвует в циклической зависимости.
+
+На панели справа показываются все прямые и обратные зависимости текущего открытого класса.
+
+![](res/result_example.png?raw=true)
 
 ## Installation
 

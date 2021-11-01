@@ -30,7 +30,7 @@ class ModulesPanel(val project: Project) : JPanel(BorderLayout()) {
         modulesPanel.layout = BoxLayout(modulesPanel, BoxLayout.Y_AXIS)
         add(createToolbar(), BorderLayout.NORTH)
         add(ScrollPaneFactory.createScrollPane(modulesPanel), BorderLayout.CENTER)
-        ModuleManager.getInstance(project).modules.forEach { module ->
+        ModuleManager.getInstance(project).modules.sortedBy { it.name }.forEach { module ->
             val name = module.name
             val checkBox = JBCheckBox(name, graphConfig.greenModules.contains(name))
             checkBox.addItemListener { itemEvent ->
