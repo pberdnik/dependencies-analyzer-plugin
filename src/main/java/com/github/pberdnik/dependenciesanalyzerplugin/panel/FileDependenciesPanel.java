@@ -1,7 +1,6 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.github.pberdnik.dependenciesanalyzerplugin.panel;
 
-import com.esotericsoftware.minlog.Log;
 import com.github.pberdnik.dependenciesanalyzerplugin.storage.GraphStorageService;
 import com.github.pberdnik.dependenciesanalyzerplugin.toolwindow.FileDependenciesToolWindow;
 import com.github.pberdnik.dependenciesanalyzerplugin.views.FileNodeView;
@@ -409,7 +408,7 @@ public final class FileDependenciesPanel extends JPanel implements Disposable, D
             boolean hasFocus
     ){
       if (!(value instanceof PackageDependenciesNode)) {
-        Log.error("value type should be PackageDependenciesNode but is " + value.getClass() + "; And value is " + Arrays.toString(((DefaultMutableTreeNode) value).getPath()));
+        LOG.error("value type should be PackageDependenciesNode but is " + value.getClass() + "; And value is " + Arrays.toString(((DefaultMutableTreeNode) value).getPath()));
         return;
       }
       PackageDependenciesNode node = (PackageDependenciesNode)value;
