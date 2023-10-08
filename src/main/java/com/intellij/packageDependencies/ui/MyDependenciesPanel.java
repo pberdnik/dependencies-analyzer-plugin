@@ -20,7 +20,9 @@ import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
@@ -844,14 +846,18 @@ public final class MyDependenciesPanel extends JPanel implements Disposable, Dat
       } else {
         builder = new MyForwardDependenciesBuilder(myProject, scope, myTransitiveBorder);
       }
-      ProgressManager.getInstance().runProcessWithProgressAsynchronously(myProject, CodeInsightBundle.message("package.dependencies.progress.title"),
-              () -> builder.analyze(), () -> {
-                myBuilders.add(builder);
-                myDependencies.putAll(builder.getDependencies());
-                putAllDependencies(builder);
-                exclude(myExcluded);
-                rebuild();
-              }, null, new PerformAnalysisInBackgroundOption(myProject));
+      String message = CodeInsightBundle.message("package.dependencies.progress.title");
+      ProgressManager.getInstance().run(new Task.Backgroundable(myProject, message, true, new PerformAnalysisInBackgroundOption(myProject)) {
+        @Override
+        public void run(@NotNull ProgressIndicator indicator) {
+          builder.analyze();
+          myBuilders.add(builder);
+          myDependencies.putAll(builder.getDependencies());
+          putAllDependencies(builder);
+          exclude(myExcluded);
+          rebuild();
+        }
+      });
     }
 
     @Nullable

@@ -29,7 +29,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.packageDependencies.DependenciesToolWindow;
 import com.intellij.packageDependencies.MyDependenciesBuilder;
-import com.intellij.packageDependencies.ui.DependenciesPanel;
 import com.intellij.packageDependencies.ui.MyDependenciesPanel;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.content.Content;
@@ -125,7 +124,7 @@ public abstract class MyDependenciesHandlerBase {
       if (shouldShowDependenciesPanel(builders)) {
         final String displayName = getPanelDisplayName(builders);
         MyDependenciesPanel panel = new MyDependenciesPanel(myProject, builders, myExcluded);
-        Content content = ContentFactory.SERVICE.getInstance().createContent(panel, displayName, false);
+        Content content = ContentFactory.getInstance().createContent(panel, displayName, false);
         content.setDisposer(panel);
         panel.setContent(content);
         DependenciesToolWindow.getInstance(myProject).addContent(content);

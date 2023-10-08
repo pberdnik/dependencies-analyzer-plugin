@@ -1,6 +1,5 @@
 package com.github.pberdnik.dependenciesanalyzerplugin.toolwindow
 
-import com.github.pberdnik.dependenciesanalyzerplugin.panel.FileDependenciesPanel
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -24,7 +23,7 @@ class FileDependenciesToolWindow(private val project: Project) {
             toolWindow.setAvailable(true, null)
 
             val panel = ModulesPanel(project)
-            val content = ContentFactory.SERVICE.getInstance().createContent(panel, GREEN_MODULES, false)
+            val content = ContentFactory.getInstance().createContent(panel, GREEN_MODULES, false)
             addContent(content)
         }
     }

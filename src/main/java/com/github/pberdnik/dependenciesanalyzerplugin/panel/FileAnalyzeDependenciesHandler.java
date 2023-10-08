@@ -21,7 +21,6 @@ import com.github.pberdnik.dependenciesanalyzerplugin.toolwindow.FileDependencie
 import com.intellij.analysis.AnalysisScope;
 import com.intellij.analysis.PerformAnalysisInBackgroundOption;
 import com.intellij.codeInsight.CodeInsightBundle;
-import com.intellij.diagnostic.PerformanceWatcher;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -139,7 +138,7 @@ public class FileAnalyzeDependenciesHandler {
       if (shouldShowDependenciesPanel(builders)) {
         final String displayName = getPanelDisplayName(builders);
         FileDependenciesPanel panel = new FileDependenciesPanel(myProject, builders, myExcluded);
-        Content content = ContentFactory.SERVICE.getInstance().createContent(panel, displayName, false);
+        Content content = ContentFactory.getInstance().createContent(panel, displayName, false);
         content.setDisposer(panel);
         panel.setContent(content);
         FileDependenciesToolWindow.Companion.getInstance(myProject).addContent(content);

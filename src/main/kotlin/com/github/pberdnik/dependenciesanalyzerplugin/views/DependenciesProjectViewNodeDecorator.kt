@@ -6,10 +6,8 @@ import com.intellij.ide.projectView.ProjectViewNode
 import com.intellij.ide.projectView.ProjectViewNodeDecorator
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.packageDependencies.ui.PackageDependenciesNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiUtilCore
-import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleTextAttributes
 
@@ -53,8 +51,5 @@ class DependenciesProjectViewNodeDecorator(val project: Project) : ProjectViewNo
                 if (isCycle) data.addText(" {C}", RED_TEXT)
             }
         }
-    }
-
-    override fun decorate(node: PackageDependenciesNode?, cellRenderer: ColoredTreeCellRenderer?) {
     }
 }
